@@ -28,8 +28,6 @@ globals [
   firstCloud
   firstCloudXCor
   leftFirstCloud
-  lake-level        ;; 当前湖泊水位
-  initial-lake-size ;; 初始湖泊大小，用于参考
 ]
 
 breed [trees my-tree]
@@ -73,8 +71,7 @@ to reset
   set vapor-incrementer 45
   set cloudsize 70
 
-  set initial-lake-size 80 ; 与湖泊初始大小一致
-  set lake-level initial-lake-size
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; set global variable values
   set cloud-line 100
   set surface -30; set the height of the earth
@@ -311,9 +308,6 @@ to go
     set vapor-mover 0
   ]
 
-  ; 更新湖泊水位图表
-  set-current-plot "湖泊水位变化"
-  plot lake-level
 
   tick
 end
@@ -330,10 +324,7 @@ to try-rain
         set ycor ycor - 4 ]
     ]
     [
-      ; 检查是否落入湖泊区域
-      if (pxcor > 40 and pxcor < 80 and pycor < surface and pycor > -55) [
-        set lake-level lake-level + 0.2 ; 雨水增加湖泊水位
-      ]
+
       set infiltratexcor xcor
       set isInfiltrating? true
       die
@@ -347,10 +338,7 @@ end
 to try-vapor
   ask vapors[
 
-    ; 检查蒸气是否从湖泊区域产生
-    if (pxcor > 40 and pxcor < 80 and ycor = surface) [
-      set lake-level lake-level - 0.05 ; 蒸发减少湖泊水位
-    ]
+
 
     ifelse ycor + (LakeTemperature / 4) < 30 [
       if ycor != -60[
@@ -553,10 +541,6 @@ to try-runoff
         set xcor xcor + (random(runoff-mover + .5)) / 2.5
       ]]
       [
-        ; 检查径流是否进入湖泊
-        if (xcor > 40 and xcor < 80 and ycor <= surface) [
-          set lake-level lake-level + 0.07 ; 径流增加湖泊水位
-        ]
         if color != green[
           set xcor xcor + (random(runoff-mover + .5)) / 2.5
         ]
@@ -699,7 +683,6 @@ create-clouds 1[
         ]
   set makeCloud? false
 end
-
 
 
 
@@ -869,24 +852,6 @@ Relative_humidity
 1
 %
 HORIZONTAL
-
-PLOT
-5
-335
-205
-485
-湖泊水位变化
-时间
-水位
-0.0
-100.0
-0.0
-100.0
-true
-false
-"" ""
-PENS
-"lake-level" 1.0 0 -14070903 true "" "plot lake-level"
 
 @#$#@#$#@
 ## WHAT IS IT?
